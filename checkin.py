@@ -182,7 +182,7 @@ def execute_check_in(client, account_name: str, provider_config, headers: dict):
 	if response.status_code == 200:
 		try:
 			result = response.json()
-			if result.get('ret') == 1 or result.get('code') == 0 or result.get('success'):
+			if result.get('ret') == 1 or result.get('code') == 0 or result.get('success') or '签到过' in result.get('message'):
 				print(f'[SUCCESS] {account_name}: Check-in successful!')
 				return True
 			else:
