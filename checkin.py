@@ -182,11 +182,16 @@ def execute_check_in(client, account_name: str, provider_config, headers: dict):
 	if response.status_code == 200:
 		try:
 			result = response.json()
-			if result.get('ret') == 1 or result.get('code') == 0 or result.get('success') or '已签到' in result.get('message'):
+			if result.get('ret') == 1 or result.get('code') == 0 or result.get('success'):
 				print(f'[SUCCESS] {account_name}: Check-in successful!')
 				return True
 			else:
 				error_msg = result.get('msg', result.get('message', 'Unknown error'))
+				# 检查是否是"已经签到过"的情况，这种情况也算成功
+				already_checked_keywords = ['已经签到', '已签到', '重复签到', 'already checked', 'already signed']
+				if any(keyword in error_msg.lower() for keyword in already_checked_keywords):
+					print(f'[SUCCESS] {account_name}: Already checked in today')
+					return True				
 				print(f'[FAILED] {account_name}: Check-in failed - {error_msg}')
 				return False
 		except json.JSONDecodeError:
